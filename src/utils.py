@@ -9,6 +9,8 @@ import pprint
 import scipy.misc
 import numpy as np
 from time import gmtime, strftime
+import imageio
+from PIL import Image
 
 pp = pprint.PrettyPrinter()
 
@@ -39,11 +41,28 @@ def load_image(image_path):
 
 def preprocess_A_and_B(img_A, img_B, fine_size, load_size, flip=True, is_test=False):
     if is_test:
-        img_A = scipy.misc.imresize(img_A, [fine_size, fine_size])
-        img_B = scipy.misc.imresize(img_B, [fine_size, fine_size])
+        img_A = np.array(Image.fromarray(img_A).resize( (fine_size, fine_size) ))
+        img_B = np.array(Image.fromarray(img_B).resize( (fine_size, fine_size) ))
     else:
-        img_A = scipy.misc.imresize(img_A, [load_size, load_size])
-        img_B = scipy.misc.imresize(img_B, [load_size, load_size])
+        # img_A = np.array(Image.fromarray(img_A).resize( (load_size, load_size) ))
+        # img_B = np.array(Image.fromarray(img_B).resize( (load_size, load_size) ))
+        # https://stackoverflow.com/questions/55319949/pil-typeerror-cannot-handle-this-data-type
+        print(load_size, img_A)
+        img_A = np.array(
+                Image.fromarray(
+                    np.uint8(img_A) * 255
+                )
+                # .astype(np.uint8)
+                .resize( (load_size, load_size) )
+            )
+        # img_B = np.array(Image.fromarray(img_B * 255).astype(np.uint8).resize( (load_size, load_size) ) )
+        img_B = np.array(
+                Image.fromarray(
+                    np.uint8(img_B) * 255
+                )
+                # .astype(np.uint8)
+                .resize( (load_size, load_size) )
+            )
 
         h1 = int(np.ceil(np.random.uniform(1e-2, load_size-fine_size)))
         w1 = int(np.ceil(np.random.uniform(1e-2, load_size-fine_size)))
@@ -65,13 +84,16 @@ def save_images(images, image_path):
     return imsave(inverse_transform(images), image_path)
     
 def save_merge_images(images, size, image_path):
-    return scipy.misc.imsave(image_path, merge(inverse_transform(images), size))
+    # return scipy.misc.imsave(image_path, merge(inverse_transform(images), size))
+    return imageio.imsave(image_path, merge(inverse_transform(images), size))
 
 def imread(path, is_grayscale = False):
     if (is_grayscale):
-        return scipy.misc.imread(path, flatten = True).astype(np.float)
+        # return scipy.misc.imread(path, flatten = True).astype(np.float)
+        return imageio.imread(path, flatten = True).astype(np.float)
     else:
-        return scipy.misc.imread(path).astype(np.float)
+        # return scipy.misc.imread(path).astype(np.float)
+        return imageio.imread(path).astype(np.float)
 
 def merge_images(images, size):
     return inverse_transform(images)

@@ -24,7 +24,7 @@ class ScaleGan(object):
         self.build_model()
 
     def build_model(self):
-        self.input_img = tf.compat.v1.placeholder(tf.float32, 
+        self.input_img = tf.placeholder(tf.float32, 
             [self.batch_size, self.img_size, self.img_size, self.img_dim*2],
             name='input_A_and_B_images')
         sizes = []
@@ -40,12 +40,12 @@ class ScaleGan(object):
         self.real_A = []
         A = self.input_img[:, :, :, :self.img_dim]
         for size in sizes:
-            self.real_A.append(tf.compat.v1.image.resize_images(A, (size, size)))
+            self.real_A.append(tf.image.resize_images(A, (size, size)))
         self.real_A.append(A)
         self.real_B = []
         B = self.input_img[:, :, :, self.img_dim:2*self.img_dim]
         for size in sizes:
-            self.real_B.append(tf.compat.v1.image.resize_images(B, (size, size)))
+            self.real_B.append(tf.image.resize_images(B, (size, size)))
         self.real_B.append(B)
 
         self.fake_B = self.generator(self.real_A[-1])
@@ -167,7 +167,7 @@ class ScaleGan(object):
         self.saver.save(self.sess, os.path.join(checkpoint_dir, model_name), global_step=step)
 
     def load_random_samples(self):
-        data = np.random.choice(glob('./datasets/val/*.jpg'.format(self.dataset_name)), self.batch_size)
+        data = np.random.choice(glob('./datasets/{}/val/*.jpg'.format(self.dataset_name)), self.batch_size)
         sample = [load_data(sample_file, self.img_size, self.img_size + int(self.img_size/8)) for sample_file in data]
         sample_images = np.array(sample).astype(np.float32)
         return sample_images
@@ -216,8 +216,7 @@ class ScaleGan(object):
             print(" [!] Load failed...")
             
         for epoch in range(args.epoch):
-            data = glob('./datasets/train/*.jpg'.format(self.dataset_name))
-            print('data', data)
+            data = glob('./datasets/{}/train/*.jpg'.format(self.dataset_name))
             random.shuffle(data)
             batch_idxs = min(len(data), args.train_size) // self.batch_size
             for idx in range(0, batch_idxs):
@@ -275,7 +274,7 @@ class ScaleGan(object):
 
     def scaleImage(self, img):
         e = conv2d(img, self.conv_dim, name='g_e0_conv')
-        size = e.shape[1]
+        size = e.shape[1].value
         count = 1
         eList = [e]
         # from img_size to 1x1
@@ -327,11 +326,11 @@ class ScaleGan(object):
         return fakeB
 
     def generator(self, img):
-        with tf.compat.v1.variable_scope("generator"):
+        with tf.variable_scope("generator"):
             return self.scaleImage(img)
 
     def sampler(self, img):
-        with tf.compat.v1.variable_scope("generator") as scope:
+        with tf.variable_scope("generator") as scope:
             scope.reuse_variables()
             fakeB = self.scaleImage(img)
             return fakeB[-1]
