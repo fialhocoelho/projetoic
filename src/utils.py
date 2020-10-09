@@ -41,13 +41,13 @@ def load_image(image_path):
 
 def preprocess_A_and_B(img_A, img_B, fine_size, load_size, flip=True, is_test=False):
     if is_test:
-        img_A = np.array(Image.fromarray(img_A).resize( (fine_size, fine_size) ))
-        img_B = np.array(Image.fromarray(img_B).resize( (fine_size, fine_size) ))
+        img_A = np.array(Image.fromarray(img_A.astype(np.uint8)).resize( (fine_size, fine_size) ))
+        img_B = np.array(Image.fromarray(img_B.astype(np.uint8)).resize( (fine_size, fine_size) ))
     else:
         # img_A = np.array(Image.fromarray(img_A).resize( (load_size, load_size) ))
         # img_B = np.array(Image.fromarray(img_B).resize( (load_size, load_size) ))
         # https://stackoverflow.com/questions/55319949/pil-typeerror-cannot-handle-this-data-type
-        # print(load_size, img_A)
+        print(load_size, img_A)
         img_A = np.array(
                 Image.fromarray(
                     np.uint8(img_A) * 255
