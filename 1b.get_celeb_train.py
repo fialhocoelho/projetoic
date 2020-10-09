@@ -5,7 +5,9 @@ from scipy import misc
 from PIL import Image
 import numpy as np
 
-dataset_dir = 'datasets'
+# path changed for testing
+# dataset_dir = 'datasets'
+dataset_dir = 'datasets_'
 dataset = 'data_crop_512_jpg'
 train_dir = 'train'
 test_dir = 'val_test'

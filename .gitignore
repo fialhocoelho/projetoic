@@ -1,2 +1,8 @@
 datasets/
 src/__pycache__/
+datasets_/train/
+datasets_/val/
+datasets_/val_test/
+logs/
+sample/
+
