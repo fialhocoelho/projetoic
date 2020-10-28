@@ -167,7 +167,8 @@ class ScaleGan(object):
         self.saver.save(self.sess, os.path.join(checkpoint_dir, model_name), global_step=step)
 
     def load_random_samples(self):
-        data = np.random.choice(glob('./datasets/{}/val/*.jpg'.format(self.dataset_name)), self.batch_size)
+        #data = np.random.choice(glob('./datasets/{}/val/*.jpg'.format(self.dataset_name)), self.batch_size)
+        data = np.random.choice(glob('./datasets_/{}/val/*.jpg'.format(self.dataset_name)), self.batch_size)
         sample = [load_data(sample_file, self.img_size, self.img_size + int(self.img_size/8)) for sample_file in data]
         sample_images = np.array(sample).astype(np.float32)
         return sample_images
@@ -216,7 +217,8 @@ class ScaleGan(object):
             print(" [!] Load failed...")
             
         for epoch in range(args.epoch):
-            data = glob('./datasets/{}/train/*.jpg'.format(self.dataset_name))
+            #data = glob('./datasets/{}/train/*.jpg'.format(self.dataset_name))
+            data = glob('./datasets_/{}/train/*.jpg'.format(self.dataset_name))
             random.shuffle(data)
             batch_idxs = min(len(data), args.train_size) // self.batch_size
             for idx in range(0, batch_idxs):
@@ -338,7 +340,8 @@ class ScaleGan(object):
     def test(self, args):
         init_op = tf.global_variables_initializer()
         self.sess.run(init_op)
-        sample_files_all = glob('./datasets/{}/val_test/*.jpg'.format(self.dataset_name))
+        #sample_files_all = glob('./datasets/{}/val_test/*.jpg'.format(self.dataset_name))
+        sample_files_all = glob('./datasets_/{}/val_test/*.jpg'.format(self.dataset_name))
         
         max_size = 10000
         batch_count = 0
